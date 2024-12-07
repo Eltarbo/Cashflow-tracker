@@ -24,7 +24,7 @@ def main():
    
    while True:
 
-        # Far scegliere all'utente le operazioni da effettuare
+        # Fa scegliere all'utente le operazioni da effettuare
         selected_action = choose_from_list(actions)
 
         if selected_action == " Esci":
@@ -34,26 +34,23 @@ def main():
         
 
         elif selected_action == " Registrazione movimenti":
-            # Far inserire all'utente i movimenti
+            # Fa inserire all'utente i movimenti
             df = get_user_cashflow(df)      
 
 
         elif selected_action == " Visualizzare resoconto":
-            # Far scegliere periodo e tipo di resoconto
-            
-            # Leggere il file e fare un resoconto   
+            # Legge il file e fa un resoconto in base alle scelte dell'utente  
             summarize_cashflow(df,cashflow_file_path)
             input("Premere invio per tornare al menú principale")
 
 
         elif selected_action == " Modificare registrazioni":
-            # Permettere di modificare le registrazioni fatte
+            #TODO: Permettere di modificare le registrazioni fatte
             pass
 
 
         elif selected_action == " Impostazioni":
-            # Permettere di scegliere determinati parametri nelle impostazioni
-            # Salvarli su un fili .ini
+            #TODO: Permettere di scegliere determinati parametri nelle impostazioni e aggiornarli sul file settings.ini
             pass
 
 # Carica il file csv sul df pandas
@@ -165,6 +162,14 @@ def save_df_to_file(df,file_path):
 # Restituisce un resoconto per categoria del file csv
 def summarize_cashflow(df,cashflow_file_path):
     l = [" Mensile", " Annuale"]
+    #TODO: stampa una DASHBOARD con il resoconto dell'anno corrente o degli ultimi 12 mesi o meno 
+    #REVIEW:resoconto con le seguenti voci: ENTRATE, USCITE, 
+        #TODO: fa inserire un input dall'utente 
+            #TODO: se vuoto torna al menú
+            #TODO: se 0 permette di vedere direttamente i movimenti
+            #TODO: se tra 1 e 12 mostra il dettaglio del mese
+    #TODO: aggiungere dei grafici alla DASHBOARD
+    #TODO: aggiungere dei grafici al resoconto mensile
     
     chosen_summary = choose_from_list(summary_type)
     if chosen_summary == " Per categoria":

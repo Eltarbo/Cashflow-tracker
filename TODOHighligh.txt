@@ -1,0 +1,18 @@
+        {
+            "text": "TODO:",
+            "color": "#FFFFFF",  // Testo bianco
+            "backgroundColor": "#FFD70055",  // Giallo dorato pastello trasparente
+            "overviewRulerColor": "gold"  // Indicatore barra di scorrimento
+        },
+        {
+            "text": "FIXME:",
+            "color": "#FFFFFF",  // Testo bianco
+            "backgroundColor": "#FF634755",  // Rosso salmone pastello trasparente
+            "overviewRulerColor": "red"  // Indicatore barra di scorrimento
+        },
+        {
+            "text": "REVIEW:",
+            "color": "#FFFFFF",  // Testo bianco
+            "backgroundColor": "rgba(173, 238, 238, 0.6)",  // Azzurro chiaro con trasparenza (60%)
+            "overviewRulerColor": "lightblue"  // Colore del marcatore nella barra di scorrimento
+        }
