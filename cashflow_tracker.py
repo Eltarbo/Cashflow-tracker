@@ -72,7 +72,7 @@ def in_income_cat(category):
 # Fa scegliere l'utente dalla lista inserita e restituisce direttamente la categoria scelta
 def choose_from_list(base_list):
     # Clearare la console
-    print("\033c", end="")
+    # print("\033c", end="")
 
     while True:
         print("Scegli una categoria dalla lista: ")
@@ -133,6 +133,7 @@ def get_user_cashflow(df):
     while True:
         cashflow_date = input("Inserisci la data del movimento(gg/mm/aaaa): ")
         try:
+            # Convalida formato data, converte da str a datetime e poi riporta a str
             cashflow_date = datetime.strptime(cashflow_date, "%d/%m/%Y")
             cashflow_date = cashflow_date.strftime ("%d/%m/%Y")
             break
@@ -157,6 +158,7 @@ def get_user_cashflow(df):
 # Salva il df pandas inserito nel file csv
 def save_df_to_file(df,file_path):
     print(f"📌 Salvando movimenti finanziari su {file_path}")
+    df['Data'] = df['Data'].dt.strftime('%d/%m/%Y')
     df.to_csv(file_path, index=False)
 
 # Restituisce un resoconto per categoria del file csv
@@ -164,6 +166,14 @@ def summarize_cashflow(df,cashflow_file_path):
     l = [" Mensile", " Annuale"]
     #TODO: stampa una DASHBOARD con il resoconto dell'anno corrente o degli ultimi 12 mesi o meno 
     #REVIEW:resoconto con le seguenti voci: ENTRATE, USCITE, 
+    df_summary = df.copy()
+    df_summary['Mese'] = df_summary['Data'].dt.strftime('%m')
+    df_summary['Tipo'] = df_summary['Categoria'].apply(lambda x: 'Entrate' if x in income_category else 'Uscite')
+    df_summary = df_summary.groupby(['Mese','Tipo'])['Importo'].sum().unstack(fill_value=0)
+    # .unstuck trasforma le righe Entrate e Uscite in colonne mentre .T fa la trasposizione della tabella
+    #FIXME: sistemare gli indici nella stampa
+    df_summary = df_summary.T
+    print(df_summary.reset_index(drop=True))
         #TODO: fa inserire un input dall'utente 
             #TODO: se vuoto torna al menú
             #TODO: se 0 permette di vedere direttamente i movimenti
