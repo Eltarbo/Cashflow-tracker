@@ -56,7 +56,7 @@ def main():
 # Carica il file csv sul df pandas
 def open_db(file_path):
     try:
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, dayfirst=True)
         df['Data'] = pd.to_datetime(df['Data'], format='%d/%m/%Y')
         print("📌 Dati caricati correttamente.")
     except FileNotFoundError:
@@ -135,7 +135,6 @@ def get_user_cashflow(df):
         try:
             # Convalida formato data, converte da str a datetime e poi riporta a str
             cashflow_date = datetime.strptime(cashflow_date, "%d/%m/%Y")
-            cashflow_date = cashflow_date.strftime ("%d/%m/%Y")
             break
         except ValueError:
             print("Formato della data non valido! Riprova usando il formato gg/mm/aaaa.")
@@ -164,16 +163,24 @@ def save_df_to_file(df,file_path):
 # Restituisce un resoconto per categoria del file csv
 def summarize_cashflow(df,cashflow_file_path):
     l = [" Mensile", " Annuale"]
+    month = {
+        '01': 'Gen', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'Mag', 
+        '06': 'Giu', '07': 'Lug', '08': 'Ago', '09': 'Set', '10': 'Ott', 
+        '11': 'Nov', '12': 'Dic'
+    }
+    # Ottengo l'anno in corso
+    current_year =  datetime.now().year
     #TODO: stampa una DASHBOARD con il resoconto dell'anno corrente o degli ultimi 12 mesi o meno 
     #REVIEW:resoconto con le seguenti voci: ENTRATE, USCITE, 
-    df_summary = df.copy()
-    df_summary['Mese'] = df_summary['Data'].dt.strftime('%m')
+    df_current_year = df[df['Data'].dt.year == current_year]
+    df_summary = df_current_year.copy()
+    df_summary['Mese'] = df_summary['Data'].dt.strftime('%m').map(month)
     df_summary['Tipo'] = df_summary['Categoria'].apply(lambda x: 'Entrate' if x in income_category else 'Uscite')
     df_summary = df_summary.groupby(['Mese','Tipo'])['Importo'].sum().unstack(fill_value=0)
     # .unstuck trasforma le righe Entrate e Uscite in colonne mentre .T fa la trasposizione della tabella
-    #FIXME: sistemare gli indici nella stampa
     df_summary = df_summary.T
-    print(df_summary.reset_index(drop=True))
+    print(df_summary)
+    print('')
         #TODO: fa inserire un input dall'utente 
             #TODO: se vuoto torna al menú
             #TODO: se 0 permette di vedere direttamente i movimenti
@@ -192,12 +199,15 @@ def summarize_cashflow(df,cashflow_file_path):
         period = choose_from_list(l)
         if period == " Annuale":
             year = get_year()
-            print(df[df['Data'].dt.year == year])
+            df_summary = df[df['Data'].dt.year == year]
+            df_summary['Data'] = df_summary['Data'].dt.strftime('%d-%m-%Y')
+            print(df_summary)
         else:
             year = get_year()
             month = get_month()
-            print(df[
-                (df['Data'].dt.year == year) & (df['Data'].dt.month == month)])
+            df_summary = df[(df['Data'].dt.year == year) & (df['Data'].dt.month == month)]
+            df_summary['Data'] = df_summary['Data'].dt.strftime('%d-%m-%Y')
+            print(df_summary)
          
     
             
