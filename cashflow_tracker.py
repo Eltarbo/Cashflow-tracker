@@ -15,7 +15,7 @@ income_category = config['LIST']['income_category'].split(",")
 expense_category = config['LIST']['expense_category'].split(",")
 cashflow_category = expense_category + income_category
 actions = config['LIST']['actions'].replace('_',' ').split(",")
-summary_type = config['LIST']['summary_type'].replace('_',' ').split(",")
+
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
    df = open_db(cashflow_file_path)
    
    while True:
-
+        print("\033c", end="")    
         # Fa scegliere all'utente le operazioni da effettuare
         selected_action = choose_from_list(actions)
 
@@ -41,7 +41,7 @@ def main():
         elif selected_action == " Visualizzare resoconto":
             # Legge il file e fa un resoconto in base alle scelte dell'utente  
             summarize_cashflow(df,cashflow_file_path)
-            input("Premere invio per tornare al menú principale")
+            # input("Premere invio per tornare al menú principale")
 
 
         elif selected_action == " Modificare registrazioni":
@@ -72,7 +72,6 @@ def in_income_cat(category):
 # Fa scegliere l'utente dalla lista inserita e restituisce direttamente la categoria scelta
 def choose_from_list(base_list):
     # Clearare la console
-    # print("\033c", end="")
 
     while True:
         print("Scegli una categoria dalla lista: ")
@@ -168,9 +167,10 @@ def summarize_cashflow(df,cashflow_file_path):
         '06': 'Giu', '07': 'Lug', '08': 'Ago', '09': 'Set', '10': 'Ott', 
         '11': 'Nov', '12': 'Dic'
     }
+
     # Ottengo l'anno in corso
     current_year =  datetime.now().year
-    #TODO: stampa una DASHBOARD con il resoconto dell'anno corrente o degli ultimi 12 mesi o meno 
+    # Stampa una DASHBOARD con il resoconto dell'anno corrente o degli ultimi 12 mesi o meno 
     #REVIEW:resoconto con le seguenti voci: ENTRATE, USCITE, 
     df_current_year = df[df['Data'].dt.year == current_year]
     df_summary = df_current_year.copy()
@@ -181,35 +181,54 @@ def summarize_cashflow(df,cashflow_file_path):
     df_summary = df_summary.T
     print(df_summary)
     print('')
-        #TODO: fa inserire un input dall'utente 
-            #TODO: se vuoto torna al menú
-            #TODO: se 0 permette di vedere direttamente i movimenti
-            #TODO: se tra 1 e 12 mostra il dettaglio del mese
-    #TODO: aggiungere dei grafici alla DASHBOARD
-    #TODO: aggiungere dei grafici al resoconto mensile
-    
-    chosen_summary = choose_from_list(summary_type)
-    if chosen_summary == " Per categoria":
-        print(df.groupby('Categoria').agg(
-            Totale = ('Importo', 'sum'),
-            Operazioni = ('Importo', 'count')
-        ))
+  
+    # TODO: Aggiungere la pulizia della console tra le stampe
+    # Fa inserire un input dall'utente    
+    while True:
+        chosen_summary= input("""Inserisci: 
+ Invio  - Esci 
+   0    - Visualizza movimenti 
+ 1 / 12 - Visualizza resoconto mensile
+""")
+        if chosen_summary == "":
+            break 
+        if chosen_summary.isdigit():  # Verifica che l'input sia composto solo da cifre
+            numero = int(chosen_summary)
+            if 0 <= numero <= 12:    
+                break
+        print('Input non valido, riprova.')
+
+    # Se vuoto torna al menú        
+    if chosen_summary == '':
+        pass
         
-    elif chosen_summary == " Movimenti":
+    # Se 0 permette di vedere direttamente i movimenti        
+    elif int(chosen_summary) == 0:
         period = choose_from_list(l)
         if period == " Annuale":
             year = get_year()
-            df_summary = df[df['Data'].dt.year == year]
+            df_summary = df[df['Data'].dt.year == year].copy()
             df_summary['Data'] = df_summary['Data'].dt.strftime('%d-%m-%Y')
             print(df_summary)
+            input("Premere invio per tornare al menú principale")
         else:
             year = get_year()
             month = get_month()
-            df_summary = df[(df['Data'].dt.year == year) & (df['Data'].dt.month == month)]
+            df_summary = df[(df['Data'].dt.year == year) & (df['Data'].dt.month == month)].copy()
             df_summary['Data'] = df_summary['Data'].dt.strftime('%d-%m-%Y')
             print(df_summary)
-         
+            input("Premere invio per tornare al menú principale")
     
+    #TODO: Se tra 1 e 12 mostra il dettaglio del mese
+    elif 1 <= int(chosen_summary) <= 12:
+        print(df.groupby('Categoria').agg(
+            Totale = ('Importo', 'sum'),
+            Operazioni = ('Importo', 'count')
+        )) 
+        input("Premere invio per tornare al menú principale")        
+
+    #TODO: aggiungere dei grafici alla DASHBOARD
+    #TODO: aggiungere dei grafici al resoconto mensile    
             
 
 
