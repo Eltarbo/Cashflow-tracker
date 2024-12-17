@@ -29,6 +29,7 @@ def main():
 
         if selected_action == " Esci":
             print("📌 Chiusura programma")  
+            df = df.sort_values(by = 'Data')
             save_df_to_file(df ,cashflow_file_path)
             break  
         
@@ -46,6 +47,7 @@ def main():
 
         elif selected_action == " Modificare registrazioni":
             #TODO: Permettere di modificare le registrazioni fatte
+          
             pass
 
 
@@ -229,6 +231,44 @@ def summarize_cashflow(df,cashflow_file_path):
     #TODO: aggiungere dei grafici al resoconto mensile    
     #TODO: Suddivisione tra spese necessarie e non        
 
+def modify_cashflow(df):
+   # Far segliere se stampre l'elenco movimenti per mese o per anno
+   # Stampre elenco movimenti con indice davanti in base alla precedente scelta
+   # Far selezionare l'indice del movimento da modificare
+   l = [" Mensile"," Annuale"]
+   
+   period = choose_from_list(l)
+   if period == " Annuale":
+      year = get_year()
+      df_summary = df[df['Data'].dt.year == year].copy()
+      df_summary['Data'] = df_summary['Data'].dt.strftime('%d-%m-%Y')
+      df_summary.index = range(1, len(df_summary) + 1)
+      print(df_summary)
+      while True:
+         chosen_index = input("Inserire l'indice del movimento da modificare")
+         if chosen_index in df.index:
+            break 
+   else:
+      year = get_year()
+      month = get_month()
+      df_summary = df[(df['Data'].dt.year == year) & (df['Data'].dt.month == month)].copy()
+      df_summary['Data'] = df_summary['Data'].dt.strftime('%d-%m-%Y')
+      df_summary.index = range(1, len(df_summary) + 1)
+      print(df_summary)
+      while True:
+         chosen_index = input("Inserire l'indice del movimento da modificare")
+         if chosen_index in df.index:
+            break
+            
+   # Far scegliere quale campo modificare o se eliminare il movimento
+   print("\033c", end="")
+   print("Movimento scelto:")
+   print(df_summary.loc[chosen_index])
+   
+            
+   # Comportarsi di conseguenza
+   
+   pass
 
 
 if __name__ == "__main__":
