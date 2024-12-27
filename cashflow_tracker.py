@@ -302,11 +302,11 @@ def modify_cashflow(df):
                 print("Formato della data non valido! Riprova usando il formato gg/mm/aaaa.")
 
         df.at[df_filtered.index[chosen_index], "Data"] = modified_date
-        pass    
+        return df   
     
     elif chosen_action == " Modifica causale":
         df.at[df_filtered.index[chosen_index], "Causale"] = input("Inserisci nuova causale: ")
-        pass
+        return df
 
     elif chosen_action == " Modifica categoria":
         chosen_category = choose_from_list(cashflow_category)
@@ -317,6 +317,7 @@ def modify_cashflow(df):
                 df.at[df_filtered.index[chosen_index], "Importo"] = abs(df.at[df_filtered.index[chosen_index], "Importo"])
             else:
                 df.at[df_filtered.index[chosen_index], "Importo"] = - abs(df.at[df_filtered.index[chosen_index], "Importo"])
+        return df    
         
 
     elif chosen_action == " Modifica importo":
@@ -325,6 +326,7 @@ def modify_cashflow(df):
         modified_amount = abs(modified_amount) if in_income_cat(df.at[df_filtered.index[chosen_index],"Categoria"]) else -abs(modified_amount)
 
         df.at[df_filtered.index[chosen_index], "Importo"] = modified_amount
+        return df
 
     elif chosen_action == " Elimina registrazione":
         df_new = df.drop(chosen_index)
@@ -344,7 +346,7 @@ def modify_cashflow(df):
             return df_new
         
     elif chosen_action == " Esci":
-        pass
+        return df
         
     
 
